@@ -1,5 +1,42 @@
 # Minimal Express App
 
+## ローカルでの確認手順
+
+依存関係をインストールします。
+
+```powershell
+npm install
+```
+
+テストを実行します。
+
+```powershell
+npm test
+```
+
+アプリを起動する場合は、次のコマンドを実行します。
+
+```powershell
+npm start
+```
+
+起動後、別の PowerShell から `/health` を確認できます。
+
+```powershell
+curl http://localhost:3000/health
+```
+
+`{"status":"ok"}` が返れば正常です。
+
+## CI
+
+GitHub Actions の CI は、次のタイミングで実行されます。
+
+- `main` ブランチに push したとき
+- Pull Request を作成または更新したとき
+
+CI では Node.js をセットアップし、`npm ci` で依存関係をインストールしてから `npm test` を実行します。
+
 ## 起動方法
 
 ```sh

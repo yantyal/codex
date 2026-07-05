@@ -1,0 +1,34 @@
+name: CI
+
+# main ブランチに push したときと、Pull Request の作成・更新時に実行する。
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    # GitHub が用意している Ubuntu 環境でテストを実行する。
+    runs-on: ubuntu-latest
+
+    steps:
+      # リポジトリのコードを CI 環境に取得する。
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # テストに使う Node.js をセットアップする。
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # npm のキャッシュを使い、2回目以降の依存関係インストールを速くする。
+          cache: npm
+
+      # package-lock.json を使って、CI でも同じ依存関係をインストールする。
+      - name: Install dependencies
+        run: npm ci
+
+      # package.json の test script を実行する。
+      - name: Run tests
+        run: npm test
