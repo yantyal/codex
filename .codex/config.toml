@@ -1,0 +1,9 @@
+# このプロジェクト専用の Codex 設定です。
+# 必要な操作だけを承認して進める、安全寄りの設定にしています。
+
+# Codex が権限の必要な操作を行う前に、利用者へ承認を求めます。
+approval_policy = "on-request"
+
+# Codex がこのワークスペース内のファイルを読み書きできるモードです。
+# プロジェクト外への不用意な変更を避けるため、danger-full-access は使いません。
+sandbox_mode = "workspace-write"
