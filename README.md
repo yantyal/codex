@@ -14,6 +14,30 @@ npm install
 npm test
 ```
 
+ESLint で静的チェックを実行します。
+
+```powershell
+npm run lint
+```
+
+Prettier でコードを整形します。
+
+```powershell
+npm run format
+```
+
+Prettier でフォーマットがそろっているか確認します。
+
+```powershell
+npm run format:check
+```
+
+npm audit で重大度 high 以上の脆弱性を確認します。
+
+```powershell
+npm run audit
+```
+
 アプリを起動する場合は、次のコマンドを実行します。
 
 ```powershell
@@ -32,10 +56,19 @@ curl http://localhost:3000/health
 
 GitHub Actions の CI は、次のタイミングで実行されます。
 
-- `main` ブランチに push したとき
+- `master` ブランチに push したとき
 - Pull Request を作成または更新したとき
 
-CI では Node.js をセットアップし、`npm ci` で依存関係をインストールしてから `npm test` を実行します。
+CI では Node.js をセットアップし、次の順番でチェックを実行します。
+
+1. `npm ci`
+2. `npm run lint`
+3. `npm run format:check`
+4. `npm test`
+5. `npm run audit`
+
+CI が失敗した場合は、まず失敗した step 名を確認してください。
+`Run lint` で失敗した場合はコードの書き方、`Check formatting` で失敗した場合は `npm run format` の実行漏れ、`Run tests` で失敗した場合はテスト結果、`Run audit` で失敗した場合は依存関係の脆弱性を確認します。
 
 ## 起動方法
 

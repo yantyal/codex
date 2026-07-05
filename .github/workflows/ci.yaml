@@ -17,11 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # テストに使う Node.js 24 をセットアップする。
+      # テストに使う Node.js 26.4 をセットアップする。
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26.4
           # npm のキャッシュを使い、2回目以降の依存関係インストールを速くする。
           cache: npm
 
@@ -29,6 +29,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # ESLint で、未定義の変数や書き方の問題がないか確認する。
+      - name: Run lint
+        run: npm run lint
+
+      # Prettier で、コードの見た目がそろっているか確認する。
+      - name: Check formatting
+        run: npm run format:check
+
       # package.json の test script を実行する。
       - name: Run tests
         run: npm test
+
+      # 重大度 high 以上の脆弱性が依存関係にないか確認する。
+      - name: Run audit
+        run: npm run audit
