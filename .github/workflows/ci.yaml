@@ -37,9 +37,9 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
-      # package.json の test script を実行する。
-      - name: Run tests
-        run: npm test
+      # Jest でテストを実行し、どれくらいコードを確認できているかを coverage として集計する。
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
       # 重大度 high 以上の脆弱性が依存関係にないか確認する。
       - name: Run audit
