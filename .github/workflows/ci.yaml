@@ -15,13 +15,13 @@ jobs:
     steps:
       # リポジトリのコードを CI 環境に取得する。
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      # テストに使う Node.js をセットアップする。
+      # テストに使う Node.js 24 をセットアップする。
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           # npm のキャッシュを使い、2回目以降の依存関係インストールを速くする。
           cache: npm
 
