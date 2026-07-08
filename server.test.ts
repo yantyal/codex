@@ -1,9 +1,9 @@
-const request = require('supertest');
-const app = require('./server');
+import request from 'supertest';
+import app from './server';
 
 describe('GET /health', () => {
   test('returns ok status', async () => {
-    // supertest を使うと、実際にサーバーを listen しなくても Express アプリをテストできる。
+    // supertest は、実際にサーバーを起動せずに Express アプリをテストする。
     const response = await request(app).get('/health');
 
     // /health が正常を表す HTTP ステータス 200 を返すことを確認する。

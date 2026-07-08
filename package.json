@@ -2,9 +2,10 @@
   "name": "codex",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node server.js",
+    "build": "tsc",
+    "start": "npm run build && node dist/server.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
@@ -15,15 +16,29 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ]
+  },
   "dependencies": {
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.1.1",
+    "@types/supertest": "^7.2.0",
     "eslint": "^9.39.4",
     "globals": "^17.7.0",
     "jest": "^30.4.2",
     "prettier": "^3.9.4",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0"
   }
 }
