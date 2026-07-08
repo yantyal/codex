@@ -1,10 +1,10 @@
 name: CI
 
-# master ブランチに push したときと、Pull Request の作成・更新時に実行する。
+# main ブランチに push したときと、Pull Request の作成・更新時に実行する。
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:

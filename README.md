@@ -62,7 +62,7 @@ curl http://localhost:3000/health
 
 GitHub Actions の CI は、次のタイミングで実行されます。
 
-- `master` ブランチに push したとき
+- `main` ブランチに push したとき
 - Pull Request を作成または更新したとき
 
 CI では Node.js をセットアップし、次の順番でチェックを実行します。
