@@ -1,6 +1,6 @@
 name: CI
 
-# master ブランチに push したときと、Pull Request の作成・更新時に実行する。
+# master ブランチへの push と Pull Request の作成・更新時に実行する。
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    # GitHub が用意している Ubuntu 環境でテストを実行する。
+    # GitHub が用意している Ubuntu 環境で確認する。
     runs-on: ubuntu-latest
 
     steps:
@@ -22,10 +22,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 26.4
-          # npm のキャッシュを使い、2回目以降の依存関係インストールを速くする。
+          # npm のキャッシュを使い、2 回目以降の依存関係インストールを速くする。
           cache: npm
 
-      # package-lock.json を使って、CI でも同じ依存関係をインストールする。
+      # package-lock.json を使い、CI でも同じ依存関係をインストールする。
       - name: Install dependencies
         run: npm ci
 
@@ -36,6 +36,10 @@ jobs:
       # Prettier で、コードの見た目がそろっているか確認する。
       - name: Check formatting
         run: npm run format:check
+
+      # TypeScript を JavaScript に変換できるか確認する。
+      - name: Run build
+        run: npm run build
 
       # Jest でテストを実行し、どれくらいコードを確認できているかを coverage として集計する。
       - name: Run tests with coverage
