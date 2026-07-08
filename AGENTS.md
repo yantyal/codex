@@ -44,6 +44,28 @@ git switch -c feature/example
 
 ネットワーク制限などで `git fetch` や `git pull` が失敗した場合は、そのまま進めず、最新化できていないことを説明する。
 
+## リリースノートとタグのルール
+
+変更を行う場合は、原則としてリリースノートの更新、バージョン更新、Git タグ作成までをセットで検討する。
+これにより、どの変更がどのバージョンに入ったかをあとから追いやすくする。
+
+- 変更内容を `CHANGELOG.md` に追記する。
+- 変更の大きさに応じて `package.json` と `package-lock.json` の `version` を更新する。
+- バージョン番号は SemVer に従い、`MAJOR.MINOR.PATCH` で管理する。
+- 変更をコミットしたあと、対応する注釈付き Git タグを作成する。
+- タグ名は `v1.1.0` のように、先頭に `v` を付ける。
+- タグ作成や push の詳しい手順は `docs/versioning.md` を確認する。
+- リリース対象ではない変更として扱う場合は、リリースノートやタグを更新しない理由を作業結果に明記する。
+
+例:
+
+```powershell
+npm version patch --no-git-tag-version
+git add package.json package-lock.json CHANGELOG.md
+git commit -m "Release v1.1.1"
+git tag -a v1.1.1 -m "Release v1.1.1"
+```
+
 ## 基本方針
 
 - 既存コードや設定を大きく壊さないように、必要最小限の変更を行う。
