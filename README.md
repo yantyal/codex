@@ -68,7 +68,7 @@ npm start
 curl http://localhost:3000/health
 ```
 
-`{"status":"ok"}` が返れば正常です。
+`{"status":"ok","database":"ok"}` が返れば正常です。
 
 別のポートで起動したい場合は、`PORT` 環境変数を指定します。
 
@@ -76,6 +76,19 @@ curl http://localhost:3000/health
 $env:PORT = "4000"
 npm start
 ```
+
+## DB 設定
+
+SQLite DB は既定で `data/app.sqlite` に作成する。
+別の場所を使いたい場合は、`DATABASE_PATH` 環境変数を指定する。
+
+```powershell
+$env:DATABASE_PATH = "data/local.sqlite"
+npm start
+```
+
+`.env`、`data/`、`*.sqlite`、`*.sqlite3` は Git 管理対象から外している。
+パスワードなどの秘密情報が必要になった場合も、GitHub に公開せず、環境変数や `.env` に置く。
 
 ## CI
 
