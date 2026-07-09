@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "types": ["node", "jest"]
   },
-  "include": ["server.ts", "server.test.ts"],
+  "include": ["*.ts"],
   "exclude": ["node_modules", "coverage", "dist"]
 }
