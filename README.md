@@ -137,3 +137,9 @@ kubectl get pods
 When using an image registry, update `image` in `k8s/deployment.yaml`, for example `registry.example.com/codex:1.3.0`.
 
 The current Kubernetes architecture diagram is available at `docs/architecture.drawio`.
+
+## AWS EKS IaC
+
+Terraform files for an AWS EKS deployment target are available in `infra/terraform/aws-eks/`.
+
+The setup creates a small EKS cluster, an ECR repository, and the EBS CSI Driver for Kubernetes PVCs. EKS and EC2 resources can create AWS charges, so destroy the environment when it is no longer needed.

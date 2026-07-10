@@ -1,5 +1,12 @@
 # Release Notes
 
+## v1.4.0 - AWS EKS IaC
+
+- Add Terraform configuration for a small AWS EKS environment.
+- Add an ECR repository for application images.
+- Add EBS CSI Driver setup so Kubernetes PVCs can use EBS volumes.
+- Document Terraform setup, image push, Kubernetes apply, and cleanup steps.
+
 ## v1.3.0 - Container and Kubernetes support
 
 - Add a multi-stage `Dockerfile` that builds TypeScript and runs the compiled app with production dependencies.
