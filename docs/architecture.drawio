@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" modified="2026-07-10T00:00:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="codex-k8s-architecture" name="Current Kubernetes Architecture">
+    <mxGraphModel dx="1242" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cluster" value="Kubernetes Cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#666666;dashed=1;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="260" y="80" width="780" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="user" value="User / Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="service" value="Service&#xa;codex&#xa;ClusterIP :80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="330" y="250" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="deployment" value="Deployment&#xa;codex&#xa;replicas: 1&#xa;strategy: Recreate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="170" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pod" value="Pod&#xa;label: app.kubernetes.io/name=codex" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="320" width="190" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="container" value="Container&#xa;image: codex:local&#xa;Express app :3000&#xa;/health probes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="805" y="310" width="170" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="pvc" value="PersistentVolumeClaim&#xa;codex-data&#xa;ReadWriteOnce&#xa;1Gi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="500" width="190" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="sqlite" value="SQLite DB file&#xa;/app/data/app.sqlite" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="820" y="505" width="145" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="image" value="Docker image&#xa;built from Dockerfile&#xa;codex:local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2f0d9;strokeColor=#82b366;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="30" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-user-service" value="HTTP" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="user" target="service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-service-pod" value="selector label" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="service" target="pod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-deployment-pod" value="creates / manages" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="deployment" target="pod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-pod-container" value="runs" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="pod" target="container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-pod-pvc" value="mounts /app/data" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="pod" target="pvc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-pvc-sqlite" value="stores" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="pvc" target="sqlite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-image-deployment" value="uses image" style="endArrow=block;html=1;rounded=0;strokeWidth=2" edge="1" parent="1" source="image" target="deployment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

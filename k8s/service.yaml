@@ -1,0 +1,21 @@
+apiVersion: v1
+# Service は Pod への入口を作るリソース。
+# Pod は作り直されると IP が変わるため、Service の固定名でアクセスする。
+kind: Service
+metadata:
+  # クラスタ内では http://codex のような名前で参照できる。
+  name: codex
+  labels:
+    app.kubernetes.io/name: codex
+spec:
+  # ClusterIP はクラスタ内部だけからアクセスできる種類。
+  # 外部公開が必要になったら Ingress や LoadBalancer を追加する。
+  type: ClusterIP
+  # このラベルを持つ Pod に通信を流す。
+  selector:
+    app.kubernetes.io/name: codex
+  ports:
+    # Service の 80 番ポートを Pod の http ポート、つまり 3000 番へつなぐ。
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,5 +1,13 @@
 # Release Notes
 
+## v1.3.0 - Container and Kubernetes support
+
+- Add a multi-stage `Dockerfile` that builds TypeScript and runs the compiled app with production dependencies.
+- Add `.dockerignore` so local databases, build output, coverage, and dependencies stay out of the image context.
+- Add Kubernetes manifests for a one-replica Deployment, ClusterIP Service, and SQLite PersistentVolumeClaim.
+- Add `start:prod` so containers can start without rebuilding at runtime.
+- Add beginner-friendly comments to Kubernetes manifests and a draw.io architecture diagram.
+
 このファイルでは、このプロジェクトの重要な変更をバージョンごとに記録する。
 
 ## v1.2.0 - SQLite DB の導入
