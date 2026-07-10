@@ -105,3 +105,35 @@ CI では次の順番で確認します。
 4. `npm run build`
 5. `npm run test:coverage`
 6. `npm run audit`
+
+## Container
+
+Build the Docker image.
+
+```powershell
+docker build -t codex:local .
+```
+
+Run the container locally. The SQLite database is stored in a Docker volume so that data remains after the container exits.
+
+```powershell
+docker volume create codex-data
+docker run --rm -p 3000:3000 -v codex-data:/app/data codex:local
+```
+
+Check the health endpoint from another PowerShell window.
+
+```powershell
+curl http://localhost:3000/health
+```
+
+Apply the Kubernetes manifests. The initial Kubernetes setup uses one replica because SQLite is stored on a single persistent volume.
+
+```powershell
+kubectl apply -f k8s/
+kubectl get pods
+```
+
+When using an image registry, update `image` in `k8s/deployment.yaml`, for example `registry.example.com/codex:1.3.0`.
+
+The current Kubernetes architecture diagram is available at `docs/architecture.drawio`.

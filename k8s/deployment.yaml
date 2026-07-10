@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+# Deployment は Pod の起動数や更新方法を管理するリソース。
+kind: Deployment
+metadata:
+  # Kubernetes 内でこの Deployment を識別する名前。
+  name: codex
+  labels:
+    # Service などが同じアプリの部品を見つけやすくする共通ラベル。
+    app.kubernetes.io/name: codex
+spec:
+  # SQLite は 1 つの DB ファイルを使うため、最初は Pod を 1 つだけ動かす。
+  replicas: 1
+  # Recreate は古い Pod を止めてから新しい Pod を作る更新方法。
+  # SQLite の同時書き込みリスクを避けるために使う。
+  strategy:
+    type: Recreate
+  # Deployment が管理する Pod をラベルで選ぶ条件。
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: codex
+  # ここから下が、実際に作られる Pod の設計図。
+  template:
+    metadata:
+      labels:
+        # selector と同じラベルを付けることで Deployment と Service から見つけられる。
+        app.kubernetes.io/name: codex
+    spec:
+      # volume に書き込むときのグループ ID。node ユーザーでも PVC に書けるようにする。
+      securityContext:
+        fsGroup: 1000
+      containers:
+        # アプリ本体のコンテナ。
+        - name: codex
+          # ローカルで build した image。registry を使う場合はこの値を差し替える。
+          image: codex:local
+          # ローカル image があればそれを使い、なければ registry から取得する。
+          imagePullPolicy: IfNotPresent
+          ports:
+            # Service から参照しやすいように、ポートに http という名前を付ける。
+            - name: http
+              containerPort: 3000
+          env:
+            # Express が待ち受けるポート。
+            - name: PORT
+              value: '3000'
+            # SQLite DB ファイルの保存先。下の volumeMounts で永続化する。
+            - name: DATABASE_PATH
+              value: /app/data/app.sqlite
+          volumeMounts:
+            # PVC を /app/data に接続し、DB ファイルを Pod の外に残す。
+            - name: data
+              mountPath: /app/data
+          # 起動直後にアプリが準備できたか確認する。
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 2
+          # 通信を受け付けてよい状態か確認する。
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          # アプリが動き続けているか確認し、失敗したら Pod を再起動する。
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 20
+          # Pod が最低限必要とする量と、使いすぎを防ぐ上限。
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          # コンテナを root ではないユーザーで動かし、余分な権限を落とす。
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        # codex-data PVC を data という名前の volume として Pod に渡す。
+        - name: data
+          persistentVolumeClaim:
+            claimName: codex-data

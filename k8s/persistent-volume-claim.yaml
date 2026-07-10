@@ -1,0 +1,18 @@
+apiVersion: v1
+# PersistentVolumeClaim は「保存領域をください」と Kubernetes に依頼するリソース。
+# SQLite の DB ファイルを Pod の再作成後も残すために使う。
+kind: PersistentVolumeClaim
+metadata:
+  # Deployment から claimName: codex-data で参照する名前。
+  name: codex-data
+  labels:
+    app.kubernetes.io/name: codex
+spec:
+  # ReadWriteOnce は 1 つの Node から読み書きできる保存領域。
+  # 今回は Deployment も 1 replica なのでこの設定で始める。
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # SQLite DB ファイル用に確保する容量。
+      storage: 1Gi

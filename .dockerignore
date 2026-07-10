@@ -1,0 +1,10 @@
+.git
+.github
+.env
+coverage
+data
+dist
+node_modules
+npm-debug.log
+*.sqlite
+*.sqlite3
