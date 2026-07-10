@@ -5,3 +5,7 @@ dist/
 *.sqlite
 *.sqlite3
 data/
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars

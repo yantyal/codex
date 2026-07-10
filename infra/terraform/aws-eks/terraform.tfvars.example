@@ -1,0 +1,16 @@
+project_name = "codex"
+environment  = "dev"
+aws_region   = "ap-northeast-1"
+
+# Optional. Leave null to use AWS CLI default credentials, AWS_PROFILE, or environment variables.
+aws_profile = null
+
+# Keep this null to let EKS use the default supported Kubernetes version.
+kubernetes_version = null
+
+# This small node group keeps the first environment modest.
+# EKS and EC2 still cost money while they are running.
+node_instance_types = ["t3.small"]
+node_min_size       = 1
+node_desired_size   = 1
+node_max_size       = 2
