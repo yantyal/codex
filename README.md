@@ -2,6 +2,11 @@
 
 Node.js と TypeScript で作った、最小構成の Express アプリです。
 
+## Career Growth Manager 仕様
+
+Career Growth Manager の MVP 仕様、画面遷移、画面項目、ER 図、開発チケットは
+[仕様書インデックス](docs/specification/README.md)から確認できます。
+
 ## セットアップ
 
 依存関係をインストールします。
