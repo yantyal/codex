@@ -18,4 +18,4 @@ npm install
 npm run check
 ```
 
-通常は Codex が `scripts/start-redmine-mcp.ps1` を経由して起動します。このスクリプトは Redmine コンテナから API キーを取得してプロセス環境へ渡し、キーを設定ファイルへ保存しません。
+通常は Codex が `scripts/start-redmine-mcp.ps1` を経由して起動します。このスクリプトは専用ユーザー `Codex` の API キーを Redmine コンテナから取得してプロセス環境へ渡し、キーを設定ファイルへ保存しません。管理者の API キーや `Codex` ユーザーのパスワードは使用しません。
