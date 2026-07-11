@@ -17,7 +17,8 @@
     "redmine:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop-redmine.ps1",
     "redmine:mcp:build": "npm --prefix tools/redmine-mcp run build",
     "redmine:mcp:test": "npm --prefix tools/redmine-mcp run check",
-    "redmine:mcp:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-redmine-mcp.ps1"
+    "redmine:mcp:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-redmine-mcp.ps1",
+    "redmine:import:mvp": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/import-redmine-mvp.ps1"
   },
   "keywords": [],
   "author": "",

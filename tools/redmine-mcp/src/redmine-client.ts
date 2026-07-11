@@ -11,6 +11,7 @@ export type RedmineIssue = {
   priority: RedmineReference;
   author: RedmineReference;
   assigned_to?: RedmineReference;
+  parent?: { id: number };
   subject: string;
   description: string;
   start_date?: string;
@@ -18,6 +19,25 @@ export type RedmineIssue = {
   done_ratio: number;
   created_on: string;
   updated_on: string;
+  relations?: RedmineIssueRelation[];
+};
+
+export type RedmineIssueRelation = {
+  id: number;
+  issue_id: number;
+  issue_to_id: number;
+  relation_type: string;
+  delay?: number;
+};
+
+export type RedmineTracker = RedmineReference;
+
+export type CreateIssueInput = {
+  projectId: number;
+  trackerId: number;
+  subject: string;
+  description: string;
+  parentIssueId?: number;
 };
 
 export type RedmineProject = {
@@ -46,6 +66,10 @@ type ProjectListResponse = {
   total_count: number;
   offset: number;
   limit: number;
+};
+
+type TrackerListResponse = {
+  trackers: RedmineTracker[];
 };
 
 /**
@@ -98,7 +122,9 @@ export class RedmineClient {
    * @remarks 存在しない課題では Redmine の応答を安全なエラーへ変換する。
    */
   async getIssue(issueId: number): Promise<RedmineIssue> {
-    const url = this.buildUrl(`/issues/${issueId}.json`);
+    const url = this.buildUrl(`/issues/${issueId}.json`, {
+      include: 'relations',
+    });
     const response = await this.request<IssueResponse>(url);
     return response.issue;
   }
@@ -111,6 +137,85 @@ export class RedmineClient {
   async listProjects(): Promise<ProjectListResponse> {
     const url = this.buildUrl('/projects.json', { limit: '100' });
     return this.request<ProjectListResponse>(url);
+  }
+
+  /**
+   * Redmine で利用可能なトラッカーを取得する。
+   * @returns トラッカー一覧を返す。
+   * @remarks インポート処理が Feature トラッカーを選ぶために利用する。
+   */
+  async listTrackers(): Promise<RedmineTracker[]> {
+    const url = this.buildUrl('/trackers.json');
+    const response = await this.request<TrackerListResponse>(url);
+    return response.trackers;
+  }
+
+  /**
+   * Redmine に新しい課題を作成する。
+   * @param input プロジェクト、トラッカー、件名、説明、親課題を指定する。
+   * @returns 作成された課題を返す。
+   * @remarks MCP ツールからは公開せず、明示的なインポート処理だけで利用する。
+   */
+  async createIssue(input: CreateIssueInput): Promise<RedmineIssue> {
+    const url = this.buildUrl('/issues.json');
+    const response = await this.request<IssueResponse>(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        issue: {
+          project_id: input.projectId,
+          tracker_id: input.trackerId,
+          subject: input.subject,
+          description: input.description,
+          parent_issue_id: input.parentIssueId,
+        },
+      }),
+    });
+    return response.issue;
+  }
+
+  /**
+   * 既存課題の説明と親課題を更新する。
+   * @param issueId 更新対象の課題番号を指定する。
+   * @param input 最新の課題内容を指定する。
+   * @returns 更新完了を表す Promise を返す。
+   * @remarks ステータスや進捗率は変更しない。
+   */
+  async updateIssue(issueId: number, input: CreateIssueInput): Promise<void> {
+    const url = this.buildUrl(`/issues/${issueId}.json`);
+    await this.request<void>(url, {
+      method: 'PUT',
+      body: JSON.stringify({
+        issue: {
+          tracker_id: input.trackerId,
+          subject: input.subject,
+          description: input.description,
+          parent_issue_id: input.parentIssueId,
+        },
+      }),
+    });
+  }
+
+  /**
+   * 先行課題と後続課題の関連を作成する。
+   * @param precedingIssueId 先に完了すべき課題番号を指定する。
+   * @param followingIssueId 後続課題番号を指定する。
+   * @returns 関連作成の完了を表す Promise を返す。
+   * @remarks 同じ関連が存在しないことを呼び出し側で確認する。
+   */
+  async createPrecedesRelation(
+    precedingIssueId: number,
+    followingIssueId: number,
+  ): Promise<void> {
+    const url = this.buildUrl(`/issues/${precedingIssueId}/relations.json`);
+    await this.request<void>(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        relation: {
+          issue_to_id: followingIssueId,
+          relation_type: 'precedes',
+        },
+      }),
+    });
   }
 
   /**
@@ -134,17 +239,34 @@ export class RedmineClient {
    * @returns JSON を指定された型として返す。
    * @remarks エラーには API キーやレスポンス本文を含めない。
    */
-  private async request<T>(url: URL): Promise<T> {
+  private async request<T>(url: URL, init: RequestInit = {}): Promise<T> {
     const response = await fetch(url, {
+      ...init,
       headers: {
         Accept: 'application/json',
+        'Content-Type': 'application/json',
         'X-Redmine-API-Key': this.apiKey,
+        ...init.headers,
       },
       signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {
-      throw new Error(`Redmine request failed with status ${response.status}.`);
+      const errorPayload = (await response.json().catch(() => undefined)) as
+        { errors?: string[] } | undefined;
+      const validationMessage = errorPayload?.errors?.join('; ');
+      throw new Error(
+        validationMessage
+          ? `Redmine request failed with status ${response.status}: ${validationMessage}`
+          : `Redmine request failed with status ${response.status}.`,
+      );
+    }
+
+    if (
+      response.status === 204 ||
+      response.headers.get('Content-Length') === '0'
+    ) {
+      return undefined as T;
     }
 
     return (await response.json()) as T;

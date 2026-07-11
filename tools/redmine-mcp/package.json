@@ -8,7 +8,8 @@
     "build": "tsc",
     "test": "node --test dist/**/*.test.js",
     "check": "npm run build && npm test",
-    "smoke": "node dist/smoke.js"
+    "smoke": "node dist/smoke.js",
+    "import:mvp": "npm run build && node dist/mvp-import.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

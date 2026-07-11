@@ -22,14 +22,35 @@ const client = new Client({ name: 'redmine-mcp-smoke', version: '0.1.0' });
 try {
   await client.connect(transport);
   const tools = await client.listTools();
-  const result = await client.callTool({
+  const projectsResult = await client.callTool({
     name: 'list_redmine_projects',
     arguments: {},
   });
+  const issuesResult = await client.callTool({
+    name: 'list_redmine_issues',
+    arguments: {
+      projectId: 'career-growth-manager',
+      statusId: '*',
+      limit: 100,
+    },
+  });
 
   const toolNames = tools.tools.map((tool) => tool.name).sort();
+  const projects = projectsResult.structuredContent as
+    { total_count?: number } | undefined;
+  const issues = issuesResult.structuredContent as
+    { total_count?: number } | undefined;
   process.stdout.write(
-    `${JSON.stringify({ connected: true, toolNames, result }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        connected: true,
+        toolNames,
+        projectCount: projects?.total_count,
+        issueCount: issues?.total_count,
+      },
+      null,
+      2,
+    )}\n`,
   );
 } finally {
   await client.close();

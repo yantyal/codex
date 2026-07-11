@@ -75,8 +75,14 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 docker compose --env-file $envFile -f $composeFile exec -T `
+    redmine cp /usr/src/redmine/bootstrap.rb /tmp/redmine-bootstrap.rb
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not copy the Redmine bootstrap file."
+}
+
+docker compose --env-file $envFile -f $composeFile exec -T `
     -e REDMINE_ADMIN_PASSWORD=$env:REDMINE_ADMIN_PASSWORD `
-    redmine bundle exec rails runner /usr/src/redmine/bootstrap.rb
+    redmine bundle exec rails runner /tmp/redmine-bootstrap.rb
 if ($LASTEXITCODE -ne 0) {
     throw "Redmine bootstrap failed."
 }
