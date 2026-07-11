@@ -1,5 +1,12 @@
 # Release Notes
 
+## Unreleased
+
+- Add npm workspaces for the Vue frontend, Express API, and shared contracts.
+- Add Prisma 7 configuration and a versioned MySQL migration foundation.
+- Add separate local MySQL services for development and migration testing.
+- Add repeatable migration verification and beginner-friendly setup documentation.
+
 ## v1.4.0 - AWS EKS IaC
 
 - Add Terraform configuration for a small AWS EKS environment.

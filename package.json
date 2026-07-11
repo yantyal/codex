@@ -2,12 +2,16 @@
   "name": "codex",
   "version": "1.4.0",
   "description": "",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build --workspaces --if-present",
     "start": "npm run build && node dist/server.js",
     "start:prod": "node dist/server.js",
-    "test": "jest",
+    "test": "jest && npm run test --workspaces --if-present",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "format": "prettier \"**/*.{js,mjs,ts,json,md,yaml}\" --write",
@@ -18,7 +22,9 @@
     "redmine:mcp:build": "npm --prefix tools/redmine-mcp run build",
     "redmine:mcp:test": "npm --prefix tools/redmine-mcp run check",
     "redmine:mcp:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-redmine-mcp.ps1",
-    "redmine:import:mvp": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/import-redmine-mvp.ps1"
+    "redmine:import:mvp": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/import-redmine-mvp.ps1",
+    "db:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-app-databases.ps1",
+    "db:test:migrations": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-app-migrations.ps1"
   },
   "keywords": [],
   "author": "",

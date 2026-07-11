@@ -3,6 +3,7 @@ coverage/
 dist/
 .env
 .env.redmine
+.env.app
 *.sqlite
 *.sqlite3
 data/

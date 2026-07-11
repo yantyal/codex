@@ -21,6 +21,28 @@ TypeScript、MySQL、TDD、DDD を中心とした実装方針は
 npm install
 ```
 
+## アプリケーション構成
+
+Career Growth Manager は npm workspaces で次の単位に分ける。
+
+- `apps/web`: Vue 3 のフロントエンド
+- `apps/api`: Express、Prisma、4層構成のAPI
+- `packages/contracts`: WebとAPIで共有する通信型
+
+開発用とテスト用のMySQLを起動する。
+
+```powershell
+npm run db:start
+```
+
+テスト用MySQLへマイグレーションを2回適用し、再実行できることを確認する。
+
+```powershell
+npm run db:test:migrations
+```
+
+`.env.app` は初回起動時に自動生成され、Git管理対象外になる。開発用MySQLは3307番、テスト用MySQLは3308番ポートを使用する。
+
 ## よく使うコマンド
 
 TypeScript を JavaScript に変換します。変換後のファイルは `dist/` に作られます。
