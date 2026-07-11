@@ -7,3 +7,11 @@ approval_policy = "on-request"
 # Codex がこのワークスペース内のファイルを読み書きできるモードです。
 # プロジェクト外への不用意な変更を避けるため、danger-full-access は使いません。
 sandbox_mode = "workspace-write"
+
+# ローカル Redmine の課題を読み取る stdio MCP サーバーです。
+# API キーはスクリプトがコンテナから取得し、この設定には保存しません。
+[mcp_servers.redmine]
+command = "powershell.exe"
+args = ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:\\Users\\toshi\\app\\codex\\scripts\\start-redmine-mcp.ps1"]
+startup_timeout_sec = 30
+tool_timeout_sec = 30
