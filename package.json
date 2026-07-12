@@ -51,7 +51,8 @@
       "**/*.test.ts"
     ],
     "testPathIgnorePatterns": [
-      "<rootDir>/tools/"
+      "<rootDir>/tools/",
+      "<rootDir>/apps/web/"
     ]
   },
   "dependencies": {

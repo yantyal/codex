@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a shared responsive application layout and primary navigation.
+
 - Add shared owner authorization and security audit logging foundations.
 
 - Add user registration and cookie-based session authentication foundations.
