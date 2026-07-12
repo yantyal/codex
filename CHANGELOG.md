@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped career goal CRUD domain and persistence schema.
+
 - Add a shared responsive application layout and primary navigation.
 
 - Add shared owner authorization and security audit logging foundations.

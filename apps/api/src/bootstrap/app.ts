@@ -1,6 +1,8 @@
 import express, { type Express } from 'express';
 import type { AuthService } from '../application/auth/auth-service.js';
 import { createAuthRouter } from '../presentation/auth/auth-router.js';
+import type { CareerGoalService } from '../application/career/career-goal-service.js';
+import { createCareerGoalRouter } from '../presentation/career/career-goal-router.js';
 
 /**
  * API 基盤が起動可能であることを表す最小のアプリケーション情報を返す。
@@ -12,9 +14,17 @@ export function getApplicationInfo(): { name: string; status: 'ok' } {
 }
 
 /** Career Growth ManagerのHTTP APIを作成する。 */
-export function createApiApp(authService: AuthService): Express {
+export function createApiApp(
+  authService: AuthService,
+  careerGoalService?: CareerGoalService,
+): Express {
   const app = express();
   app.use(express.json());
   app.use('/api/auth', createAuthRouter(authService));
+  if (careerGoalService)
+    app.use(
+      '/api/career-goals',
+      createCareerGoalRouter(authService, careerGoalService),
+    );
   return app;
 }

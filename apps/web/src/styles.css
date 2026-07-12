@@ -25,6 +25,12 @@ button { cursor: pointer; }
 .auth-card input { min-height: 44px; padding: 8px 12px; border: 1px solid #b7c1d2; border-radius: 8px; }
 .primary-button { min-height: 44px; border: 0; border-radius: 8px; background: #315fc4; color: #fff; font-weight: 700; }
 .form-error { margin: 0; padding: 12px; border-radius: 8px; background: #fff0f0; color: #a22525; }
+.view-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.compact { width: auto; padding: 10px 18px; }
+.goal-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 24px; background: #fff; border-radius: 16px; }
+.goal-form h2, .goal-form label:nth-of-type(4), .goal-form label:nth-of-type(5), .goal-form label:nth-of-type(6), .goal-form > div { grid-column: 1 / -1; }
+.goal-form label { display: grid; gap: 6px; font-weight: 700; }.goal-form input, .goal-form textarea, .goal-form select { padding: 10px; border: 1px solid #b7c1d2; border-radius: 8px; }.goal-form textarea { min-height: 80px; }
+.goal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }.goal-card, .goal-detail { padding: 20px; background: #fff; border: 1px solid #dfe4ec; border-radius: 12px; }.goal-card h2 { margin-top: 0; }.danger { color: #a22525; }
 
 @media (max-width: 640px) {
   .app-shell { display: block; padding-bottom: 72px; }
@@ -33,6 +39,7 @@ button { cursor: pointer; }
   .side-navigation { display: none; }
   .main-content { padding: 24px 16px; }
   .empty-state { padding: 24px 20px; }
+  .goal-form { grid-template-columns: 1fr; }.goal-form > * { grid-column: 1 !important; }
   .bottom-navigation { position: fixed; z-index: 20; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(5, 1fr); min-height: 64px; padding-bottom: env(safe-area-inset-bottom); background: #fff; border-top: 1px solid #dfe4ec; }
   .bottom-navigation button { min-width: 0; border: 0; background: transparent; color: #53627c; font-size: .72rem; }
   .bottom-navigation button.active { color: #315fc4; font-weight: 700; background: #edf3ff; }
