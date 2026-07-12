@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 dist/
+apps/api/src/generated/
 .env
 .env.redmine
 .env.app

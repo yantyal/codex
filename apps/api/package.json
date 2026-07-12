@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "prisma generate && tsc",
+    "start": "node dist/server.js",
     "test": "node --test",
     "db:validate": "prisma validate",
     "db:deploy": "prisma migrate deploy"
