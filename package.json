@@ -32,6 +32,18 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "module": "CommonJS",
+            "moduleResolution": "Node",
+            "ignoreDeprecations": "6.0"
+          }
+        }
+      ]
+    },
     "testMatch": [
       "**/*.test.ts"
     ],
