@@ -2,6 +2,7 @@ node_modules/
 coverage/
 dist/
 apps/api/src/generated/
+test-cookie.txt
 .env
 .env.redmine
 .env.app
