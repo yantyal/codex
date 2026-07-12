@@ -1,0 +1,22 @@
+{
+  "name": "career-growth-redmine-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only MCP server for the local Career Growth Manager Redmine instance",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/**/*.test.js",
+    "check": "npm run build && npm test",
+    "smoke": "node dist/smoke.js",
+    "import:mvp": "npm run build && node dist/mvp-import.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^6.0.0"
+  }
+}

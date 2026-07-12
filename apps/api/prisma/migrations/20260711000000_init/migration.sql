@@ -1,0 +1,1 @@
+-- MVP-001 establishes the migration history. Business tables start in MVP-002.

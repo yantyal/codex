@@ -1,0 +1,56 @@
+name: career-growth-redmine
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: redmine
+      MYSQL_USER: redmine
+      MYSQL_PASSWORD: ${REDMINE_DB_PASSWORD:?REDMINE_DB_PASSWORD is required}
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - redmine_mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h localhost -u redmine -p$$MYSQL_PASSWORD --silent
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  redmine:
+    image: redmine:6.1.3
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:8080:3000'
+    environment:
+      REDMINE_DB_MYSQL: mysql
+      REDMINE_DB_PORT: 3306
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: ${REDMINE_DB_PASSWORD:?REDMINE_DB_PASSWORD is required}
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_DB_ENCODING: utf8mb4
+      SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:?REDMINE_SECRET_KEY_BASE is required}
+    volumes:
+      - redmine_files:/usr/src/redmine/files
+      - ./bootstrap.rb:/usr/src/redmine/bootstrap.rb:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'ruby -rnet/http -e "exit Net::HTTP.get_response(URI(''http://127.0.0.1:3000/'')).is_a?(Net::HTTPSuccess) ? 0 : 1"'
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+volumes:
+  redmine_mysql_data:
+  redmine_files:
