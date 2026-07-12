@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { navigationItems } from './navigation';
+import CareerGoalsView from './CareerGoalsView.vue';
 
 defineProps<{ user: { name: string; email: string } }>();
 const emit = defineEmits<{ logout: [] }>();
@@ -29,6 +30,8 @@ function navigate(id: string): void {
     </aside>
 
     <main class="main-content" tabindex="-1">
+      <CareerGoalsView v-if="activeId === 'career'" />
+      <template v-else>
       <p class="eyebrow">{{ activeItem.shortLabel }}</p>
       <h1>{{ activeItem.label }}</h1>
       <section class="empty-state" aria-live="polite">
@@ -36,6 +39,7 @@ function navigate(id: string): void {
         <p>{{ activeItem.description }}</p>
         <p>この画面の登録・編集機能は、後続のMVPチケットで追加します。</p>
       </section>
+      </template>
     </main>
 
     <nav class="bottom-navigation" aria-label="スマートフォン用ナビゲーション">
