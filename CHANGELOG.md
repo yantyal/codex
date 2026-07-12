@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add career goal skill links and current-to-target level gap display.
+
 - Add owner-scoped skill CRUD schema and domain service.
 
 - Add owner-scoped skill category and level settings.
