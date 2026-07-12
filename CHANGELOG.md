@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add user registration and cookie-based session authentication foundations.
+
 - Add the user, skill category, and skill level definition schema with default user settings.
 
 - Add npm workspaces for the Vue frontend, Express API, and shared contracts.

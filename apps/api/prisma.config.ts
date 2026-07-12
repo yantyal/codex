@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -7,6 +7,9 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    // クライアント生成や静的検証ではDBへ接続しないため、CI用の形式上のURLを使用する。
+    url:
+      process.env.DATABASE_URL ??
+      'mysql://career_growth:not-used@localhost:3306/career_growth',
   },
 });
