@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add shared owner authorization and security audit logging foundations.
+
 - Add user registration and cookie-based session authentication foundations.
 
 - Add the user, skill category, and skill level definition schema with default user settings.

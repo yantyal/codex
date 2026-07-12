@@ -18,8 +18,24 @@ model User {
   skillCategories SkillCategory[]
   skillLevels     SkillLevelDefinition[]
   sessions        Session[]
+  auditLogs       AuditLog[]
 
   @@map("users")
+}
+
+model AuditLog {
+  id           String   @id @db.Char(36)
+  actorUserId  String   @map("actor_user_id") @db.Char(36)
+  action       String   @db.VarChar(20)
+  resourceType String   @map("resource_type") @db.VarChar(100)
+  resourceId   String   @map("resource_id") @db.VarChar(100)
+  outcome      String   @db.VarChar(20)
+  createdAt    DateTime @default(now()) @map("created_at")
+  actor        User     @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([actorUserId, createdAt])
+  @@index([resourceType, resourceId, createdAt])
+  @@map("audit_logs")
 }
 
 model Session {
