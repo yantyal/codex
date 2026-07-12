@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import CareerSkillLinks from './CareerSkillLinks.vue';
 type Goal = { id: string; name: string; targetRole: string; dueDate: string; reason: string; currentState: string; targetState: string; priority: string; status: string };
 const items = ref<Goal[]>([]); const selected = ref<Goal | null>(null); const message = ref(''); const editing = ref(false);
 const form = ref({ name: '', targetRole: '', dueDate: '', reason: '', currentState: '', targetState: '', priority: 'medium', status: 'not_started' });
@@ -25,5 +26,6 @@ onMounted(load);
     <div v-else-if="items.length" class="goal-grid"><article v-for="goal in items" :key="goal.id" class="goal-card" @click="selected = goal"><h2>{{ goal.name }}</h2><p>{{ goal.targetRole }}</p><p>期限: {{ goal.dueDate.slice(0, 10) }}</p><button class="text-button" type="button" @click.stop="startEdit(goal)">編集</button><button class="text-button danger" type="button" @click.stop="archive(goal)">アーカイブ</button></article></div>
     <section v-else-if="!editing" class="empty-state"><h2>キャリア目標はまだありません</h2><p>「新規作成」から、目指す役割と期限を登録してください。</p></section>
     <section v-if="selected && !editing" class="goal-detail"><h2>{{ selected.name }}</h2><p><strong>目指す役割:</strong> {{ selected.targetRole }}</p><p><strong>設定理由:</strong> {{ selected.reason || '未入力' }}</p><p><strong>現在:</strong> {{ selected.currentState || '未入力' }}</p><p><strong>目標:</strong> {{ selected.targetState || '未入力' }}</p></section>
+    <CareerSkillLinks v-if="selected && !editing" :key="selected.id" :goal-id="selected.id" />
   </section>
 </template>

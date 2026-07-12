@@ -12,6 +12,8 @@ import { SkillSettingsService } from './application/skill-settings/skill-setting
 import { PrismaSkillSettingsRepository } from './infrastructure/persistence/prisma-skill-settings-repository.js';
 import { SkillService } from './application/skill/skill-service.js';
 import { PrismaSkillRepository } from './infrastructure/persistence/prisma-skill-repository.js';
+import { CareerSkillService } from './application/career-skill/career-skill-service.js';
+import { PrismaCareerSkillRepository } from './infrastructure/persistence/prisma-career-skill-repository.js';
 
 const databaseUrl = new URL(process.env.DATABASE_URL ?? '');
 const adapter = new PrismaMariaDb({
@@ -38,11 +40,16 @@ const skillService = new SkillService(
   new PrismaSkillRepository(prisma),
   new PrismaAuditLogger(prisma),
 );
+const careerSkillService = new CareerSkillService(
+  new PrismaCareerSkillRepository(prisma),
+  new PrismaAuditLogger(prisma),
+);
 const app = createApiApp(
   authService,
   careerGoalService,
   skillSettingsService,
   skillService,
+  careerSkillService,
 );
 
 app.listen(Number(process.env.API_PORT ?? 3001), () => {

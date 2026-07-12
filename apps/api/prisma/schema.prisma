@@ -26,19 +26,20 @@ model User {
 }
 
 model Skill {
-  id           String        @id @db.Char(36)
-  userId       String        @map("user_id") @db.Char(36)
-  categoryId   String        @map("category_id") @db.Char(36)
-  name         String        @db.VarChar(200)
-  currentLevel Int           @map("current_level")
-  targetLevel  Int           @map("target_level")
-  criteria     String        @db.Text
-  notes        String        @db.Text
-  archivedAt   DateTime?     @map("archived_at")
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category     SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  id           String            @id @db.Char(36)
+  userId       String            @map("user_id") @db.Char(36)
+  categoryId   String            @map("category_id") @db.Char(36)
+  name         String            @db.VarChar(200)
+  currentLevel Int               @map("current_level")
+  targetLevel  Int               @map("target_level")
+  criteria     String            @db.Text
+  notes        String            @db.Text
+  archivedAt   DateTime?         @map("archived_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     SkillCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  careerGoals  CareerGoalSkill[]
 
   @@unique([userId, categoryId, name])
   @@index([userId, currentLevel, targetLevel])
@@ -46,23 +47,36 @@ model Skill {
 }
 
 model CareerGoal {
-  id           String    @id @db.Char(36)
-  userId       String    @map("user_id") @db.Char(36)
-  name         String    @db.VarChar(200)
-  targetRole   String    @map("target_role") @db.VarChar(200)
-  dueDate      DateTime  @map("due_date") @db.Date
-  reason       String    @db.Text
-  currentState String    @map("current_state") @db.Text
-  targetState  String    @map("target_state") @db.Text
-  priority     String    @db.VarChar(20)
-  status       String    @db.VarChar(20)
-  archivedAt   DateTime? @map("archived_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String            @id @db.Char(36)
+  userId         String            @map("user_id") @db.Char(36)
+  name           String            @db.VarChar(200)
+  targetRole     String            @map("target_role") @db.VarChar(200)
+  dueDate        DateTime          @map("due_date") @db.Date
+  reason         String            @db.Text
+  currentState   String            @map("current_state") @db.Text
+  targetState    String            @map("target_state") @db.Text
+  priority       String            @db.VarChar(20)
+  status         String            @db.VarChar(20)
+  archivedAt     DateTime?         @map("archived_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requiredSkills CareerGoalSkill[]
 
   @@index([userId, status, dueDate])
   @@map("career_goals")
+}
+
+model CareerGoalSkill {
+  careerGoalId String     @map("career_goal_id") @db.Char(36)
+  skillId      String     @map("skill_id") @db.Char(36)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  careerGoal   CareerGoal @relation(fields: [careerGoalId], references: [id], onDelete: Cascade)
+  skill        Skill      @relation(fields: [skillId], references: [id], onDelete: Restrict)
+
+  @@id([careerGoalId, skillId])
+  @@index([skillId])
+  @@map("career_goal_skills")
 }
 
 model AuditLog {
