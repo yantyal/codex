@@ -3,6 +3,8 @@ import type { AuthService } from '../application/auth/auth-service.js';
 import { createAuthRouter } from '../presentation/auth/auth-router.js';
 import type { CareerGoalService } from '../application/career/career-goal-service.js';
 import { createCareerGoalRouter } from '../presentation/career/career-goal-router.js';
+import type { SkillSettingsService } from '../application/skill-settings/skill-settings-service.js';
+import { createSkillSettingsRouter } from '../presentation/skill-settings/skill-settings-router.js';
 
 /**
  * API 基盤が起動可能であることを表す最小のアプリケーション情報を返す。
@@ -17,6 +19,7 @@ export function getApplicationInfo(): { name: string; status: 'ok' } {
 export function createApiApp(
   authService: AuthService,
   careerGoalService?: CareerGoalService,
+  skillSettingsService?: SkillSettingsService,
 ): Express {
   const app = express();
   app.use(express.json());
@@ -25,6 +28,11 @@ export function createApiApp(
     app.use(
       '/api/career-goals',
       createCareerGoalRouter(authService, careerGoalService),
+    );
+  if (skillSettingsService)
+    app.use(
+      '/api/skill-settings',
+      createSkillSettingsRouter(authService, skillSettingsService),
     );
   return app;
 }

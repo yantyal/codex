@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { navigationItems } from './navigation';
 import CareerGoalsView from './CareerGoalsView.vue';
+import SkillSettingsView from './SkillSettingsView.vue';
 
 defineProps<{ user: { name: string; email: string } }>();
 const emit = defineEmits<{ logout: [] }>();
@@ -31,6 +32,7 @@ function navigate(id: string): void {
 
     <main class="main-content" tabindex="-1">
       <CareerGoalsView v-if="activeId === 'career'" />
+      <SkillSettingsView v-else-if="activeId === 'settings'" />
       <template v-else>
       <p class="eyebrow">{{ activeItem.shortLabel }}</p>
       <h1>{{ activeItem.label }}</h1>
