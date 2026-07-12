@@ -10,6 +10,8 @@ import { PrismaAuditLogger } from './infrastructure/persistence/prisma-audit-log
 import { PrismaCareerGoalRepository } from './infrastructure/persistence/prisma-career-goal-repository.js';
 import { SkillSettingsService } from './application/skill-settings/skill-settings-service.js';
 import { PrismaSkillSettingsRepository } from './infrastructure/persistence/prisma-skill-settings-repository.js';
+import { SkillService } from './application/skill/skill-service.js';
+import { PrismaSkillRepository } from './infrastructure/persistence/prisma-skill-repository.js';
 
 const databaseUrl = new URL(process.env.DATABASE_URL ?? '');
 const adapter = new PrismaMariaDb({
@@ -32,7 +34,16 @@ const skillSettingsService = new SkillSettingsService(
   new PrismaSkillSettingsRepository(prisma),
   new PrismaAuditLogger(prisma),
 );
-const app = createApiApp(authService, careerGoalService, skillSettingsService);
+const skillService = new SkillService(
+  new PrismaSkillRepository(prisma),
+  new PrismaAuditLogger(prisma),
+);
+const app = createApiApp(
+  authService,
+  careerGoalService,
+  skillSettingsService,
+  skillService,
+);
 
 app.listen(Number(process.env.API_PORT ?? 3001), () => {
   console.log('Career Growth Manager API started.');

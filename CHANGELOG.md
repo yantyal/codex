@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped skill CRUD schema and domain service.
+
 - Add owner-scoped skill category and level settings.
 
 - Add owner-scoped career goal CRUD domain and persistence schema.
