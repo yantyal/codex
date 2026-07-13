@@ -14,6 +14,7 @@ type RoadmapItem = {
   progressRate: number;
 };
 type SelectOption = { id: string; name: string };
+type DependencyItem = SelectOption & { careerGoalId: string };
 type RoadmapForm = Omit<RoadmapItem, 'id'>;
 
 const items = ref<RoadmapItem[]>([]);
@@ -23,6 +24,9 @@ const selected = ref<RoadmapItem | null>(null);
 const editing = ref(false);
 const message = ref('');
 const displayMode = ref<'list' | 'timeline'>('timeline');
+const dependencies = ref<Record<string, DependencyItem[]>>({});
+const dependencyEditingId = ref<string | null>(null);
+const prerequisiteItemIds = ref<string[]>([]);
 const emptyForm = (): RoadmapForm => ({
   careerGoalId: careerGoals.value[0]?.id ?? '',
   skillId: null,
@@ -58,6 +62,32 @@ async function load(): Promise<void> {
   message.value = itemResponse.ok
     ? ''
     : (itemBody.message ?? 'ロードマップを取得できませんでした。');
+  if (itemResponse.ok) await loadDependencies(items.value);
+}
+
+/**
+ * 表示中の各項目に設定された前提項目をAPIから読み込む。
+ * @param roadmapItems 前提項目を読み込むロードマップ項目
+ * @returns 読み込み完了を表すPromise
+ */
+async function loadDependencies(roadmapItems: RoadmapItem[]): Promise<void> {
+  const results = await Promise.all(
+    roadmapItems.map(async (item) => {
+      const response = await fetch(`/api/roadmap-dependencies/${item.id}`);
+      const body = (await response.json()) as {
+        items?: DependencyItem[];
+        message?: string;
+      };
+      return { itemId: item.id, response, body };
+    }),
+  );
+  dependencies.value = Object.fromEntries(
+    results.map(({ itemId, body }) => [itemId, body.items ?? []]),
+  );
+  const failed = results.find(({ response }) => !response.ok);
+  if (failed)
+    message.value =
+      failed.body.message ?? '前提項目を読み込めませんでした。';
 }
 
 /**
@@ -88,6 +118,56 @@ function startEdit(item: RoadmapItem): void {
     plannedEndDate: item.plannedEndDate.slice(0, 10),
   };
   editing.value = true;
+  message.value = '';
+}
+
+/**
+ * 現在の設定を選択状態へ反映して前提項目の編集を開始する。
+ * @param item 編集するロードマップ項目
+ * @returns 戻り値はない
+ */
+function startDependencyEdit(item: RoadmapItem): void {
+  dependencyEditingId.value = item.id;
+  prerequisiteItemIds.value = (dependencies.value[item.id] ?? []).map(
+    ({ id }) => id,
+  );
+  message.value = '';
+}
+
+/**
+ * 同じキャリア目標に属する自分以外の項目を選択肢として返す。
+ * @param item 前提項目を設定する対象
+ * @returns 選択できるロードマップ項目の配列
+ */
+function dependencyCandidates(item: RoadmapItem): RoadmapItem[] {
+  return items.value.filter(
+    (candidate) =>
+      candidate.id !== item.id &&
+      candidate.careerGoalId === item.careerGoalId,
+  );
+}
+
+/**
+ * 選択した前提項目をAPIへ送り、成功時に画面表示を更新する。
+ * @param item 前提項目を設定する対象
+ * @returns 保存完了を表すPromise
+ */
+async function saveDependencies(item: RoadmapItem): Promise<void> {
+  const response = await fetch(`/api/roadmap-dependencies/${item.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prerequisiteItemIds: prerequisiteItemIds.value }),
+  });
+  const body = (await response.json()) as {
+    items?: DependencyItem[];
+    message?: string;
+  };
+  if (!response.ok) {
+    message.value = body.message ?? '前提項目を保存できませんでした。';
+    return;
+  }
+  dependencies.value[item.id] = body.items ?? [];
+  dependencyEditingId.value = null;
   message.value = '';
 }
 
@@ -201,9 +281,26 @@ onMounted(load);
           <div><span class="status-badge">{{ statusLabel(item.status) }}</span><span class="order-label">表示順 {{ item.sortOrder }}</span></div>
           <h2>{{ item.name }}</h2>
           <p>{{ careerGoalName(item.careerGoalId) }} / {{ skillName(item.skillId) }}</p>
+          <div class="prerequisite-summary">
+            <strong>前提項目</strong>
+            <ul v-if="dependencies[item.id]?.length">
+              <li v-for="prerequisite in dependencies[item.id]" :key="prerequisite.id">{{ prerequisite.name }}</li>
+            </ul>
+            <p v-else>前提項目はありません</p>
+          </div>
           <label class="progress-label">進捗 {{ item.progressRate }}%<progress :value="item.progressRate" max="100" /></label>
           <button class="text-button" type="button" @click="startEdit(item)">編集</button>
+          <button class="text-button" type="button" @click="startDependencyEdit(item)">前提項目を設定</button>
           <button class="text-button danger" type="button" @click="archive(item)">アーカイブ</button>
+          <form v-if="dependencyEditingId === item.id" class="dependency-form" @submit.prevent="saveDependencies(item)">
+            <fieldset>
+              <legend>前提項目を選択</legend>
+              <label v-for="candidate in dependencyCandidates(item)" :key="candidate.id"><input v-model="prerequisiteItemIds" type="checkbox" :value="candidate.id" />{{ candidate.name }}</label>
+              <p v-if="!dependencyCandidates(item).length">同じキャリア目標に選択できる項目がありません。</p>
+            </fieldset>
+            <button class="primary-button compact" type="submit">保存</button>
+            <button class="text-button" type="button" @click="dependencyEditingId = null">キャンセル</button>
+          </form>
         </article>
       </div>
     </template>
