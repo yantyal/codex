@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add roadmap prerequisites with self-reference and cycle validation.
+
 - Add owner-scoped roadmap item CRUD with list and timeline views.
 
 - Add career goal skill links and current-to-target level gap display.
