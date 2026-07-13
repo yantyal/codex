@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped roadmap item CRUD with list and timeline views.
+
 - Add career goal skill links and current-to-target level gap display.
 
 - Add owner-scoped skill CRUD schema and domain service.

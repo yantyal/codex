@@ -33,6 +33,19 @@ button { cursor: pointer; }
 .goal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }.goal-card, .goal-detail { padding: 20px; background: #fff; border: 1px solid #dfe4ec; border-radius: 12px; }.goal-card h2 { margin-top: 0; }.danger { color: #a22525; }
 
 .settings-panel { margin-bottom: 24px; padding: 24px; border: 1px solid #dfe4ec; border-radius: 16px; background: #fff; }
+.display-switch { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px; }
+.display-switch button { padding: 8px 16px; border: 1px solid #b7c1d2; border-radius: 8px; background: #fff; color: #315fc4; }
+.display-switch button.active { border-color: #315fc4; background: #315fc4; color: #fff; }
+.roadmap-timeline { position: relative; display: grid; gap: 16px; padding-left: 28px; }
+.roadmap-timeline::before { position: absolute; top: 0; bottom: 0; left: 8px; width: 3px; border-radius: 3px; background: #b9c9ec; content: ""; }
+.roadmap-card { position: relative; padding: 20px; border: 1px solid #dfe4ec; border-radius: 12px; background: #fff; }
+.roadmap-timeline .roadmap-card::before { position: absolute; top: 24px; left: -26px; width: 13px; height: 13px; border: 3px solid #fff; border-radius: 50%; background: #315fc4; box-shadow: 0 0 0 2px #315fc4; content: ""; }
+.roadmap-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.roadmap-card h2 { margin: 12px 0 6px; }
+.roadmap-period, .progress-label { display: flex; align-items: center; gap: 8px; color: #53627c; }
+.status-badge, .order-label { display: inline-block; margin: 10px 8px 0 0; padding: 4px 8px; border-radius: 999px; background: #edf3ff; color: #244eaa; font-size: .8rem; }
+.order-label { background: #f0f2f6; color: #53627c; }
+.progress-label progress { flex: 1; min-width: 100px; }
 .inline-form, .setting-row, .level-row { display: grid; grid-template-columns: 2fr 100px 100px 80px; gap: 12px; align-items: center; margin-bottom: 12px; }
 .inline-form { grid-template-columns: 1fr auto; }.settings-panel input, .settings-panel textarea { padding: 9px; border: 1px solid #b7c1d2; border-radius: 8px; }.level-row { grid-template-columns: 100px 180px 1fr 80px; }.level-row textarea { min-height: 64px; }
 
@@ -45,6 +58,7 @@ button { cursor: pointer; }
   .empty-state { padding: 24px 20px; }
   .goal-form { grid-template-columns: 1fr; }.goal-form > * { grid-column: 1 !important; }
   .setting-row, .level-row { grid-template-columns: 1fr; }.inline-form { grid-template-columns: 1fr; }
+  .roadmap-timeline { padding-left: 22px; }.roadmap-period { flex-wrap: wrap; }
   .bottom-navigation { position: fixed; z-index: 20; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(5, 1fr); min-height: 64px; padding-bottom: env(safe-area-inset-bottom); background: #fff; border-top: 1px solid #dfe4ec; }
   .bottom-navigation button { min-width: 0; border: 0; background: transparent; color: #53627c; font-size: .72rem; }
   .bottom-navigation button.active { color: #315fc4; font-weight: 700; background: #edf3ff; }

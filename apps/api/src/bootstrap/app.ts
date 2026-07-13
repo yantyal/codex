@@ -9,6 +9,8 @@ import type { SkillService } from '../application/skill/skill-service.js';
 import { createSkillRouter } from '../presentation/skill/skill-router.js';
 import type { CareerSkillService } from '../application/career-skill/career-skill-service.js';
 import { createCareerSkillRouter } from '../presentation/career-skill/career-skill-router.js';
+import type { RoadmapItemService } from '../application/roadmap/roadmap-item-service.js';
+import { createRoadmapItemRouter } from '../presentation/roadmap/roadmap-item-router.js';
 
 /**
  * API 基盤が起動可能であることを表す最小のアプリケーション情報を返す。
@@ -26,6 +28,7 @@ export function createApiApp(
   skillSettingsService?: SkillSettingsService,
   skillService?: SkillService,
   careerSkillService?: CareerSkillService,
+  roadmapItemService?: RoadmapItemService,
 ): Express {
   const app = express();
   app.use(express.json());
@@ -46,6 +49,11 @@ export function createApiApp(
     app.use(
       '/api/career-goal-skills',
       createCareerSkillRouter(authService, careerSkillService),
+    );
+  if (roadmapItemService)
+    app.use(
+      '/api/roadmap-items',
+      createRoadmapItemRouter(authService, roadmapItemService),
     );
   return app;
 }
