@@ -6,11 +6,19 @@ import SkillSettingsView from './SkillSettingsView.vue';
 import SkillsView from './SkillsView.vue';
 import RoadmapView from './RoadmapView.vue';
 import EvaluationPeriodsView from './EvaluationPeriodsView.vue';
+import GoalsView from './GoalsView.vue';
 
 defineProps<{ user: { name: string; email: string } }>();
 const emit = defineEmits<{ logout: [] }>();
 const activeId = ref('dashboard');
 const mobileMenuOpen = ref(false);
+const goalDraft = ref<{
+  roadmapItemId: string;
+  name: string;
+  startDate: string;
+  dueDate: string;
+  priority: 'high' | 'medium' | 'low';
+} | null>(null);
 const activeItem = computed(() => navigationItems.find(({ id }) => id === activeId.value) ?? navigationItems[0]);
 const mobilePrimaryItems = navigationItems.filter(({ mobilePrimary }) => mobilePrimary);
 
@@ -18,6 +26,16 @@ const mobilePrimaryItems = navigationItems.filter(({ mobilePrimary }) => mobileP
 function navigate(id: string): void {
   activeId.value = id;
   mobileMenuOpen.value = false;
+}
+
+/**
+ * ロードマップ項目の初期値を保持して目標登録画面へ移動する。
+ * @param draft ロードマップ項目から引き継ぐ初期値
+ * @returns 戻り値はない
+ */
+function createGoalFromRoadmap(draft: NonNullable<typeof goalDraft.value>): void {
+  goalDraft.value = draft;
+  navigate('goals');
 }
 </script>
 
@@ -36,7 +54,8 @@ function navigate(id: string): void {
     <main class="main-content" tabindex="-1">
       <CareerGoalsView v-if="activeId === 'career'" />
       <SkillsView v-else-if="activeId === 'skills'" />
-      <RoadmapView v-else-if="activeId === 'roadmap'" />
+      <RoadmapView v-else-if="activeId === 'roadmap'" @create-goal="createGoalFromRoadmap" />
+      <GoalsView v-else-if="activeId === 'goals'" :initial-draft="goalDraft" @draft-consumed="goalDraft = null" />
       <EvaluationPeriodsView v-else-if="activeId === 'evaluations'" />
       <SkillSettingsView v-else-if="activeId === 'settings'" />
       <template v-else>

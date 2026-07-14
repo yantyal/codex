@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
+const emit = defineEmits<{
+  createGoal: [
+    draft: {
+      roadmapItemId: string;
+      name: string;
+      startDate: string;
+      dueDate: string;
+      priority: 'high' | 'medium' | 'low';
+    },
+  ];
+}>();
+
 type RoadmapItem = {
   id: string;
   careerGoalId: string;
@@ -245,6 +257,21 @@ function statusLabel(status: RoadmapItem['status']): string {
   }[status];
 }
 
+/**
+ * ロードマップ項目の名称・期間・優先度を目標の初期値として親画面へ渡す。
+ * @param item 初期値の元になるロードマップ項目
+ * @returns 戻り値はない
+ */
+function createGoal(item: RoadmapItem): void {
+  emit('createGoal', {
+    roadmapItemId: item.id,
+    name: item.name,
+    startDate: item.plannedStartDate.slice(0, 10),
+    dueDate: item.plannedEndDate.slice(0, 10),
+    priority: item.priority,
+  });
+}
+
 onMounted(load);
 </script>
 
@@ -291,6 +318,7 @@ onMounted(load);
           <label class="progress-label">進捗 {{ item.progressRate }}%<progress :value="item.progressRate" max="100" /></label>
           <button class="text-button" type="button" @click="startEdit(item)">編集</button>
           <button class="text-button" type="button" @click="startDependencyEdit(item)">前提項目を設定</button>
+          <button class="text-button" type="button" @click="createGoal(item)">目標を作成</button>
           <button class="text-button danger" type="button" @click="archive(item)">アーカイブ</button>
           <form v-if="dependencyEditingId === item.id" class="dependency-form" @submit.prevent="saveDependencies(item)">
             <fieldset>

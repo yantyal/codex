@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped goal CRUD, roadmap defaults, and SMART warnings.
+
 - Add owner-scoped evaluation period CRUD with date-range validation.
 
 - Add roadmap prerequisites with self-reference and cycle validation.
