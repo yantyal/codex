@@ -24,6 +24,8 @@ import { GoalService } from './application/goal/goal-service.js';
 import { PrismaGoalRepository } from './infrastructure/persistence/prisma-goal-repository.js';
 import { MilestoneService } from './application/milestone/milestone-service.js';
 import { PrismaMilestoneRepository } from './infrastructure/persistence/prisma-milestone-repository.js';
+import { DailyRecordService } from './application/daily-record/daily-record-service.js';
+import { PrismaDailyRecordRepository } from './infrastructure/persistence/prisma-daily-record-repository.js';
 
 const databaseUrl = new URL(process.env.DATABASE_URL ?? '');
 const adapter = new PrismaMariaDb({
@@ -74,6 +76,10 @@ const milestoneService = new MilestoneService(
   new PrismaMilestoneRepository(prisma),
   new PrismaAuditLogger(prisma),
 );
+const dailyRecordService = new DailyRecordService(
+  new PrismaDailyRecordRepository(prisma),
+  new PrismaAuditLogger(prisma),
+);
 const app = createApiApp(
   authService,
   careerGoalService,
@@ -85,6 +91,7 @@ const app = createApiApp(
   evaluationPeriodService,
   goalService,
   milestoneService,
+  dailyRecordService,
 );
 
 app.listen(Number(process.env.API_PORT ?? 3001), () => {

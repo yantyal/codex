@@ -24,6 +24,7 @@ model User {
   roadmapItems      RoadmapItem[]
   evaluationPeriods EvaluationPeriod[]
   goals             Goal[]
+  dailyRecords      DailyRecord[]
 
   @@map("users")
 }
@@ -146,6 +147,7 @@ model Goal {
   roadmapItem         RoadmapItem?      @relation(fields: [roadmapItemId], references: [id], onDelete: SetNull)
   evaluationPeriod    EvaluationPeriod? @relation(fields: [evaluationPeriodId], references: [id], onDelete: SetNull)
   milestones          Milestone[]
+  dailyRecords        DailyRecord[]
 
   @@index([userId, status, dueDate])
   @@index([roadmapItemId])
@@ -154,21 +156,47 @@ model Goal {
 }
 
 model Milestone {
-  id                  String    @id @db.Char(36)
-  goalId              String    @map("goal_id") @db.Char(36)
-  name                String    @db.VarChar(200)
-  dueDate             DateTime  @map("due_date") @db.Date
-  completionCondition String    @map("completion_condition") @db.Text
-  weight              Decimal   @db.Decimal(8, 2)
-  status              String    @db.VarChar(20)
-  completedDate       DateTime? @map("completed_date") @db.Date
-  archivedAt          DateTime? @map("archived_at")
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
-  goal                Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  id                  String        @id @db.Char(36)
+  goalId              String        @map("goal_id") @db.Char(36)
+  name                String        @db.VarChar(200)
+  dueDate             DateTime      @map("due_date") @db.Date
+  completionCondition String        @map("completion_condition") @db.Text
+  weight              Decimal       @db.Decimal(8, 2)
+  status              String        @db.VarChar(20)
+  completedDate       DateTime?     @map("completed_date") @db.Date
+  archivedAt          DateTime?     @map("archived_at")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  goal                Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  dailyRecords        DailyRecord[]
 
   @@index([goalId, status, dueDate])
   @@map("milestones")
+}
+
+model DailyRecord {
+  id             String     @id @db.Char(36)
+  userId         String     @map("user_id") @db.Char(36)
+  goalId         String     @map("goal_id") @db.Char(36)
+  milestoneId    String?    @map("milestone_id") @db.Char(36)
+  activityDate   DateTime   @map("activity_date") @db.Date
+  description    String     @db.Text
+  workMinutes    Int        @map("work_minutes")
+  progressAmount Decimal?   @map("progress_amount") @db.Decimal(15, 2)
+  learned        String     @db.Text
+  issue          String     @db.Text
+  nextAction     String     @map("next_action") @db.Text
+  archivedAt     DateTime?  @map("archived_at")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal           Goal       @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  milestone      Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+
+  @@index([userId, activityDate])
+  @@index([goalId, activityDate])
+  @@index([milestoneId])
+  @@map("daily_records")
 }
 
 model RoadmapDependency {

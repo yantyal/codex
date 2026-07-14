@@ -7,6 +7,7 @@ import SkillsView from './SkillsView.vue';
 import RoadmapView from './RoadmapView.vue';
 import EvaluationPeriodsView from './EvaluationPeriodsView.vue';
 import GoalsView from './GoalsView.vue';
+import DailyRecordsView from './DailyRecordsView.vue';
 
 defineProps<{ user: { name: string; email: string } }>();
 const emit = defineEmits<{ logout: [] }>();
@@ -56,6 +57,7 @@ function createGoalFromRoadmap(draft: NonNullable<typeof goalDraft.value>): void
       <SkillsView v-else-if="activeId === 'skills'" />
       <RoadmapView v-else-if="activeId === 'roadmap'" @create-goal="createGoalFromRoadmap" />
       <GoalsView v-else-if="activeId === 'goals'" :initial-draft="goalDraft" @draft-consumed="goalDraft = null" />
+      <DailyRecordsView v-else-if="activeId === 'daily'" :owner-key="user.email" />
       <EvaluationPeriodsView v-else-if="activeId === 'evaluations'" />
       <SkillSettingsView v-else-if="activeId === 'settings'" />
       <template v-else>
