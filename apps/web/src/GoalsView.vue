@@ -37,6 +37,17 @@ type Goal = {
   smartWarnings: SmartWarning[];
 };
 type GoalForm = Omit<Goal, 'id' | 'smartWarnings'>;
+type Milestone = {
+  id: string;
+  goalId: string;
+  name: string;
+  dueDate: string;
+  completionCondition: string;
+  weight: number;
+  status: 'not_started' | 'in_progress' | 'completed' | 'on_hold';
+  completedDate: string | null;
+};
+type MilestoneForm = Omit<Milestone, 'id'>;
 type RoadmapOption = {
   id: string;
   name: string;
@@ -55,6 +66,11 @@ const selected = ref<Goal | null>(null);
 const editing = ref(false);
 const message = ref('');
 const smartWarnings = ref<SmartWarning[]>([]);
+const milestoneGoal = ref<Goal | null>(null);
+const milestones = ref<Milestone[]>([]);
+const selectedMilestone = ref<Milestone | null>(null);
+const milestoneEditing = ref(false);
+const milestoneMessage = ref('');
 const emptyForm = (): GoalForm => ({
   roadmapItemId: null,
   evaluationPeriodId: null,
@@ -77,6 +93,16 @@ const emptyForm = (): GoalForm => ({
   status: 'not_started',
 });
 const form = ref<GoalForm>(emptyForm());
+const emptyMilestoneForm = (goal: Goal): MilestoneForm => ({
+  goalId: goal.id,
+  name: '',
+  dueDate: goal.dueDate.slice(0, 10),
+  completionCondition: '',
+  weight: 1,
+  status: 'not_started',
+  completedDate: null,
+});
+const milestoneForm = ref<MilestoneForm | null>(null);
 
 /**
  * 目標一覧とフォームの選択肢をAPIからまとめて読み込む。
@@ -112,6 +138,7 @@ async function load(): Promise<void> {
  * @returns 戻り値はない
  */
 function startCreate(draft?: GoalDraft): void {
+  milestoneGoal.value = null;
   selected.value = null;
   form.value = {
     ...emptyForm(),
@@ -128,6 +155,7 @@ function startCreate(draft?: GoalDraft): void {
  * @returns 戻り値はない
  */
 function startEdit(goal: Goal): void {
+  milestoneGoal.value = null;
   selected.value = goal;
   form.value = {
     ...goal,
@@ -219,6 +247,119 @@ async function archive(goal: Goal): Promise<void> {
   await load();
 }
 
+
+/**
+ * 選択したマイルストーン型目標の中間地点一覧を読み込む。
+ * @param goal 一覧を表示する親目標
+ * @returns 読み込み完了を表すPromise
+ */
+async function openMilestones(goal: Goal): Promise<void> {
+  milestoneGoal.value = goal;
+  selectedMilestone.value = null;
+  milestoneEditing.value = false;
+  milestoneMessage.value = '';
+  const response = await fetch(
+    `/api/milestones?goalId=${encodeURIComponent(goal.id)}`,
+  );
+  const body = (await response.json()) as {
+    items?: Milestone[];
+    message?: string;
+  };
+  milestones.value = body.items ?? [];
+  if (!response.ok)
+    milestoneMessage.value =
+      body.message ?? 'マイルストーンを取得できませんでした。';
+}
+
+/**
+ * 選択中の目標へ追加する空のマイルストーンフォームを開く。
+ * @returns 戻り値はない
+ */
+function startMilestoneCreate(): void {
+  if (!milestoneGoal.value) return;
+  selectedMilestone.value = null;
+  milestoneForm.value = emptyMilestoneForm(milestoneGoal.value);
+  milestoneEditing.value = true;
+  milestoneMessage.value = '';
+}
+
+/**
+ * 選択したマイルストーンの値をフォームへ入れて編集を開始する。
+ * @param milestone 編集するマイルストーン
+ * @returns 戻り値はない
+ */
+function startMilestoneEdit(milestone: Milestone): void {
+  selectedMilestone.value = milestone;
+  milestoneForm.value = {
+    ...milestone,
+    dueDate: milestone.dueDate.slice(0, 10),
+    completedDate: milestone.completedDate?.slice(0, 10) ?? null,
+  };
+  milestoneEditing.value = true;
+  milestoneMessage.value = '';
+}
+
+/**
+ * マイルストーンフォームをAPIへ送り、成功時に一覧を読み直す。
+ * @returns 保存完了を表すPromise
+ */
+async function saveMilestone(): Promise<void> {
+  if (!milestoneForm.value || !milestoneGoal.value) return;
+  const url = selectedMilestone.value
+    ? `/api/milestones/${selectedMilestone.value.id}`
+    : '/api/milestones';
+  const response = await fetch(url, {
+    method: selectedMilestone.value ? 'PUT' : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(milestoneForm.value),
+  });
+  const body = (await response.json()) as { message?: string };
+  if (!response.ok) {
+    milestoneMessage.value =
+      body.message ?? 'マイルストーンを保存できませんでした。';
+    return;
+  }
+  milestoneEditing.value = false;
+  selectedMilestone.value = null;
+  await openMilestones(milestoneGoal.value);
+}
+
+/**
+ * 確認後にマイルストーンをアーカイブして一覧を読み直す。
+ * @param milestone アーカイブするマイルストーン
+ * @returns 処理完了を表すPromise
+ */
+async function archiveMilestone(milestone: Milestone): Promise<void> {
+  if (
+    !milestoneGoal.value ||
+    !confirm(`「${milestone.name}」をアーカイブしますか？`)
+  )
+    return;
+  const response = await fetch(
+    `/api/milestones/${milestone.id}?goalId=${encodeURIComponent(milestoneGoal.value.id)}`,
+    { method: 'DELETE' },
+  );
+  if (!response.ok) {
+    milestoneMessage.value = 'マイルストーンをアーカイブできませんでした。';
+    return;
+  }
+  await openMilestones(milestoneGoal.value);
+}
+
+/**
+ * 保存値を利用者向けのマイルストーン状態へ変換する。
+ * @param status 保存されているステータス
+ * @returns 画面へ表示する日本語名
+ */
+function milestoneStatusLabel(status: Milestone['status']): string {
+  return {
+    not_started: '未着手',
+    in_progress: '進行中',
+    completed: '完了',
+    on_hold: '保留',
+  }[status];
+}
+
 /**
  * 保存値を利用者向けの日本語ステータスへ変換する。
  * @param status 保存されているステータス
@@ -296,6 +437,7 @@ onMounted(async () => {
         <p v-else>マイルストーンで測定</p>
         <p v-if="goal.smartWarnings.length" class="smart-count">SMART警告 {{ goal.smartWarnings.length }}件</p>
         <p v-else class="smart-complete">SMART警告なし</p>
+        <button v-if="goal.calculationType === 'milestone'" class="text-button" type="button" @click="openMilestones(goal)">マイルストーン管理</button>
         <button class="text-button" type="button" @click="startEdit(goal)">編集</button>
         <button class="text-button danger" type="button" @click="archive(goal)">アーカイブ</button>
       </article>
@@ -304,6 +446,42 @@ onMounted(async () => {
     <section v-else-if="!editing" class="empty-state">
       <h2>目標はまだありません</h2>
       <p>「新規作成」またはロードマップの「目標を作成」から登録してください。</p>
+    </section>
+
+    <section v-if="milestoneGoal" class="milestone-panel">
+      <div class="view-heading">
+        <div><p class="eyebrow">Milestones</p><h2>{{ milestoneGoal.name }}のマイルストーン</h2></div>
+        <div><button class="primary-button compact" type="button" @click="startMilestoneCreate">新規作成</button><button class="text-button" type="button" @click="milestoneGoal = null">閉じる</button></div>
+      </div>
+      <p v-if="milestoneMessage" class="form-error" role="alert">{{ milestoneMessage }}</p>
+
+      <form v-if="milestoneEditing && milestoneForm" class="milestone-form" @submit.prevent="saveMilestone">
+        <h3>{{ selectedMilestone ? 'マイルストーンを編集' : 'マイルストーンを登録' }}</h3>
+        <label>名称<input v-model="milestoneForm.name" required maxlength="200" /></label>
+        <label>期限<input v-model="milestoneForm.dueDate" type="date" required /></label>
+        <label>重み<input v-model.number="milestoneForm.weight" type="number" min="0.01" step="0.01" required /></label>
+        <label>ステータス<select v-model="milestoneForm.status"><option value="not_started">未着手</option><option value="in_progress">進行中</option><option value="completed">完了</option><option value="on_hold">保留</option></select></label>
+        <label v-if="milestoneForm.status === 'completed'">完了日<input v-model="milestoneForm.completedDate" type="date" required /></label>
+        <label class="full-field">完了条件<textarea v-model="milestoneForm.completionCondition" maxlength="2000" /></label>
+        <div class="full-field"><button class="primary-button compact" type="submit">保存</button><button class="text-button" type="button" @click="milestoneEditing = false">キャンセル</button></div>
+      </form>
+
+      <div v-else-if="milestones.length" class="milestone-list">
+        <article v-for="milestone in milestones" :key="milestone.id" class="milestone-card">
+          <span class="status-badge">{{ milestoneStatusLabel(milestone.status) }}</span>
+          <h3>{{ milestone.name }}</h3>
+          <p>期限 {{ milestone.dueDate.slice(0, 10) }} / 重み {{ milestone.weight }}</p>
+          <p v-if="milestone.completionCondition">完了条件: {{ milestone.completionCondition }}</p>
+          <p v-if="milestone.completedDate">完了日 {{ milestone.completedDate.slice(0, 10) }}</p>
+          <button class="text-button" type="button" @click="startMilestoneEdit(milestone)">編集</button>
+          <button class="text-button danger" type="button" @click="archiveMilestone(milestone)">アーカイブ</button>
+        </article>
+      </div>
+
+      <section v-else class="empty-state milestone-empty">
+        <h3>マイルストーンはまだありません</h3>
+        <p>「新規作成」から目標達成までの中間地点を登録してください。</p>
+      </section>
     </section>
   </section>
 </template>

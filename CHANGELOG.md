@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped milestone CRUD with weight, status, and completion date management.
+
 - Add owner-scoped goal CRUD, roadmap defaults, and SMART warnings.
 
 - Add owner-scoped evaluation period CRUD with date-range validation.

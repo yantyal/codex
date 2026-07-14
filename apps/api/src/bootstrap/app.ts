@@ -17,6 +17,8 @@ import type { EvaluationPeriodService } from '../application/evaluation/evaluati
 import { createEvaluationPeriodRouter } from '../presentation/evaluation/evaluation-period-router.js';
 import type { GoalService } from '../application/goal/goal-service.js';
 import { createGoalRouter } from '../presentation/goal/goal-router.js';
+import type { MilestoneService } from '../application/milestone/milestone-service.js';
+import { createMilestoneRouter } from '../presentation/milestone/milestone-router.js';
 
 /**
  * API 基盤が起動可能であることを表す最小のアプリケーション情報を返す。
@@ -38,6 +40,7 @@ export function createApiApp(
   roadmapDependencyService?: RoadmapDependencyService,
   evaluationPeriodService?: EvaluationPeriodService,
   goalService?: GoalService,
+  milestoneService?: MilestoneService,
 ): Express {
   const app = express();
   app.use(express.json());
@@ -76,5 +79,10 @@ export function createApiApp(
     );
   if (goalService)
     app.use('/api/goals', createGoalRouter(authService, goalService));
+  if (milestoneService)
+    app.use(
+      '/api/milestones',
+      createMilestoneRouter(authService, milestoneService),
+    );
   return app;
 }
