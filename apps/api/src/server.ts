@@ -18,6 +18,8 @@ import { RoadmapItemService } from './application/roadmap/roadmap-item-service.j
 import { PrismaRoadmapItemRepository } from './infrastructure/persistence/prisma-roadmap-item-repository.js';
 import { RoadmapDependencyService } from './application/roadmap/roadmap-dependency-service.js';
 import { PrismaRoadmapDependencyRepository } from './infrastructure/persistence/prisma-roadmap-dependency-repository.js';
+import { EvaluationPeriodService } from './application/evaluation/evaluation-period-service.js';
+import { PrismaEvaluationPeriodRepository } from './infrastructure/persistence/prisma-evaluation-period-repository.js';
 
 const databaseUrl = new URL(process.env.DATABASE_URL ?? '');
 const adapter = new PrismaMariaDb({
@@ -56,6 +58,10 @@ const roadmapDependencyService = new RoadmapDependencyService(
   new PrismaRoadmapDependencyRepository(prisma),
   new PrismaAuditLogger(prisma),
 );
+const evaluationPeriodService = new EvaluationPeriodService(
+  new PrismaEvaluationPeriodRepository(prisma),
+  new PrismaAuditLogger(prisma),
+);
 const app = createApiApp(
   authService,
   careerGoalService,
@@ -64,6 +70,7 @@ const app = createApiApp(
   careerSkillService,
   roadmapItemService,
   roadmapDependencyService,
+  evaluationPeriodService,
 );
 
 app.listen(Number(process.env.API_PORT ?? 3001), () => {
