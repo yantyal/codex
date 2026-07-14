@@ -5,6 +5,7 @@ import CareerGoalsView from './CareerGoalsView.vue';
 import SkillSettingsView from './SkillSettingsView.vue';
 import SkillsView from './SkillsView.vue';
 import RoadmapView from './RoadmapView.vue';
+import EvaluationPeriodsView from './EvaluationPeriodsView.vue';
 
 defineProps<{ user: { name: string; email: string } }>();
 const emit = defineEmits<{ logout: [] }>();
@@ -36,6 +37,7 @@ function navigate(id: string): void {
       <CareerGoalsView v-if="activeId === 'career'" />
       <SkillsView v-else-if="activeId === 'skills'" />
       <RoadmapView v-else-if="activeId === 'roadmap'" />
+      <EvaluationPeriodsView v-else-if="activeId === 'evaluations'" />
       <SkillSettingsView v-else-if="activeId === 'settings'" />
       <template v-else>
       <p class="eyebrow">{{ activeItem.shortLabel }}</p>

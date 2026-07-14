@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add owner-scoped evaluation period CRUD with date-range validation.
+
 - Add roadmap prerequisites with self-reference and cycle validation.
 
 - Add owner-scoped roadmap item CRUD with list and timeline views.

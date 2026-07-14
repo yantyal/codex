@@ -13,6 +13,8 @@ import type { RoadmapItemService } from '../application/roadmap/roadmap-item-ser
 import { createRoadmapItemRouter } from '../presentation/roadmap/roadmap-item-router.js';
 import type { RoadmapDependencyService } from '../application/roadmap/roadmap-dependency-service.js';
 import { createRoadmapDependencyRouter } from '../presentation/roadmap/roadmap-dependency-router.js';
+import type { EvaluationPeriodService } from '../application/evaluation/evaluation-period-service.js';
+import { createEvaluationPeriodRouter } from '../presentation/evaluation/evaluation-period-router.js';
 
 /**
  * API 基盤が起動可能であることを表す最小のアプリケーション情報を返す。
@@ -32,6 +34,7 @@ export function createApiApp(
   careerSkillService?: CareerSkillService,
   roadmapItemService?: RoadmapItemService,
   roadmapDependencyService?: RoadmapDependencyService,
+  evaluationPeriodService?: EvaluationPeriodService,
 ): Express {
   const app = express();
   app.use(express.json());
@@ -62,6 +65,11 @@ export function createApiApp(
     app.use(
       '/api/roadmap-dependencies',
       createRoadmapDependencyRouter(authService, roadmapDependencyService),
+    );
+  if (evaluationPeriodService)
+    app.use(
+      '/api/evaluation-periods',
+      createEvaluationPeriodRouter(authService, evaluationPeriodService),
     );
   return app;
 }
