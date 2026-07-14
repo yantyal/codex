@@ -145,11 +145,30 @@ model Goal {
   user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   roadmapItem         RoadmapItem?      @relation(fields: [roadmapItemId], references: [id], onDelete: SetNull)
   evaluationPeriod    EvaluationPeriod? @relation(fields: [evaluationPeriodId], references: [id], onDelete: SetNull)
+  milestones          Milestone[]
 
   @@index([userId, status, dueDate])
   @@index([roadmapItemId])
   @@index([evaluationPeriodId])
   @@map("goals")
+}
+
+model Milestone {
+  id                  String    @id @db.Char(36)
+  goalId              String    @map("goal_id") @db.Char(36)
+  name                String    @db.VarChar(200)
+  dueDate             DateTime  @map("due_date") @db.Date
+  completionCondition String    @map("completion_condition") @db.Text
+  weight              Decimal   @db.Decimal(8, 2)
+  status              String    @db.VarChar(20)
+  completedDate       DateTime? @map("completed_date") @db.Date
+  archivedAt          DateTime? @map("archived_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  goal                Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, status, dueDate])
+  @@map("milestones")
 }
 
 model RoadmapDependency {
